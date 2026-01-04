@@ -6,7 +6,7 @@ import {
 import { API_CONFIG } from '@/src/config/api.config';
 
 export type RealtimeEvent = {
-  type: 'TABLE_STATUS_CHANGED' | 'ACTIVE_TABLE_ITEMS_CHANGED';
+  type: 'TABLE_STATUS_CHANGED' | 'ACTIVE_TABLE_ITEMS_CHANGED' | 'ASSIGNED_TABLES_CHANGED';
   payload: any;
 };
 
@@ -41,6 +41,12 @@ class RealtimeService {
     this.hub.on('ACTIVE_TABLE_ITEMS_CHANGED', payload =>
       this.emit({ type: 'ACTIVE_TABLE_ITEMS_CHANGED', payload })
     );
+
+    // New: listen for assignment changes so mobile dashboard can refresh structure
+    this.hub.on('ASSIGNED_TABLES_CHANGED', payload => {
+      console.log('[Realtime] ASSIGNED_TABLES_CHANGED', payload);
+      this.emit({ type: 'ASSIGNED_TABLES_CHANGED', payload });
+    });
 
     this.hub.onclose(error => {
       this.connected = false;
